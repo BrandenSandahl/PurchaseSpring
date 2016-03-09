@@ -22,10 +22,15 @@ public class PurchasesController {
     CustomerRepository customerRepository;
     @Autowired
     PurchaseRepository purchaseRepository;
+    @Autowired
+    CategoryRepository categoryRepository;
 
 
     @PostConstruct
     public void init() throws FileNotFoundException {
+//       purchaseRepository.deleteAll();
+//        customerRepository.deleteAll();
+//        categoryRepository.deleteAll();
         if (customerRepository.count() < 1) {
 
             File f = new File("customers.csv");
@@ -46,8 +51,15 @@ public class PurchasesController {
             s.nextLine();
             while (s.hasNext()) {
                 String[] lineSplit = s.nextLine().split(",");
-                Purchase purchase = new Purchase(lineSplit[1], lineSplit[2], Integer.valueOf(lineSplit[3]), lineSplit[4]);
+                Purchase purchase = new Purchase(lineSplit[1], lineSplit[2], Integer.valueOf(lineSplit[3]));
                 purchase.setCustomer(customerRepository.findOne(Integer.valueOf(lineSplit[0])));
+                Category categoryInDb = categoryRepository.findByCategory(lineSplit[4]);
+
+                if (categoryInDb == null) {
+                    categoryInDb = new Category(lineSplit[4]);
+                    categoryRepository.save(categoryInDb);
+                }
+                purchase.setCategory(categoryInDb);
                 purchaseRepository.save(purchase);
             }
             s.close();
