@@ -8,6 +8,11 @@
 <body>
 
 
+<ul>
+    {{#categories}}
+    <li><a href="/?category={{category}}">{{category}}</a></li>
+    {{/categories}}
+</ul>
 <table>
     <caption>Customer Purchases</caption>
     <thead>
@@ -24,7 +29,7 @@
     <tr>
         <td>{{customer.name}}</td>
         <td>{{customer.email}}</td>
-        <td>{{category.id}}</td>
+        <td>{{category.category}}</td>
         <td>{{creditCard}}</td>
         <td>{{cvv}}</td>
         <td>{{date}}</td>

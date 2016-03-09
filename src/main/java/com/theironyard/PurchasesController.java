@@ -56,7 +56,7 @@ public class PurchasesController {
                 Category categoryInDb = categoryRepository.findByCategory(lineSplit[4]);
 
                 if (categoryInDb == null) {
-                    categoryInDb = new Category(lineSplit[4]);
+                    categoryInDb = new Category(lineSplit[4].toLowerCase());
                     categoryRepository.save(categoryInDb);
                 }
                 purchase.setCategory(categoryInDb);
@@ -68,9 +68,15 @@ public class PurchasesController {
 
 
     @RequestMapping(name = "/", method = RequestMethod.GET)
-    public String home(Model model) {
+    public String home(Model model, String category) {
+        model.addAttribute("categories", categoryRepository.findAll()); //this is to list out all categories
 
-        model.addAttribute("purchases", purchaseRepository.findAll());
+        if (category != null) {
+            Category categoryObject = categoryRepository.findByCategory(category);
+            model.addAttribute("purchases", purchaseRepository.findByCategory(categoryObject));
+        } else {
+            model.addAttribute("purchases", purchaseRepository.findAll()); //lists out all records in purchase table with relations.
+        }
         return "home";
     }
 

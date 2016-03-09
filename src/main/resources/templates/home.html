@@ -8,6 +8,11 @@
 <body>
 
 
+<ul>
+    {{#categories}}
+    <li><a href="/?category={{category}}">{{category}}</a></li>
+    {{/categories}}
+</ul>
 <table>
     <caption>Customer Purchases</caption>
     <thead>

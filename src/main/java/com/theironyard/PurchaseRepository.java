@@ -9,6 +9,7 @@ import java.util.List;
  */
 public interface PurchaseRepository extends CrudRepository<Purchase, Integer> {
     List<Purchase> findByCustomer(Customer customer);
+    List<Purchase> findByCategory(Category category);
 
 
 }
