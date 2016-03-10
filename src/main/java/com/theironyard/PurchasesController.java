@@ -31,7 +31,7 @@ public class PurchasesController {
 //       purchaseRepository.deleteAll();
 //        customerRepository.deleteAll();
 //        categoryRepository.deleteAll();
-        if (customerRepository.count() < 1) {
+        if (customerRepository.count() < 1) { //if nothing is in the table
 
             File f = new File("customers.csv");
             Scanner s = new Scanner(f);
@@ -52,14 +52,14 @@ public class PurchasesController {
             while (s.hasNext()) {
                 String[] lineSplit = s.nextLine().split(",");
                 Purchase purchase = new Purchase(lineSplit[1], lineSplit[2], Integer.valueOf(lineSplit[3]));
-                purchase.setCustomer(customerRepository.findOne(Integer.valueOf(lineSplit[0])));
+                purchase.setCustomer(customerRepository.findOne(Integer.valueOf(lineSplit[0]))); //set the id to a customer
                 Category categoryInDb = categoryRepository.findByCategory(lineSplit[4]);
 
-                if (categoryInDb == null) {
-                    categoryInDb = new Category(lineSplit[4].toLowerCase());
+                if (categoryInDb == null) { //if the category has not yet been created
+                    categoryInDb = new Category(lineSplit[4].toLowerCase()); //set the category
                     categoryRepository.save(categoryInDb);
                 }
-                purchase.setCategory(categoryInDb);
+                purchase.setCategory(categoryInDb); //connect category to the category table
                 purchaseRepository.save(purchase);
             }
             s.close();
@@ -71,7 +71,7 @@ public class PurchasesController {
     public String home(Model model, String category) {
         model.addAttribute("categories", categoryRepository.findAll()); //this is to list out all categories
 
-        if (category != null) {
+        if (category != null && !category.equals("back")) {
             Category categoryObject = categoryRepository.findByCategory(category);
             model.addAttribute("purchases", purchaseRepository.findByCategory(categoryObject));
         } else {
