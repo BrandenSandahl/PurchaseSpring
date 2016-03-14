@@ -18,8 +18,7 @@ public class Purchase {
     private String creditCard;
     @Column(nullable = false)
     private int cvv;
-//    @Column(nullable = false)
-//    private String category;
+
 
     @ManyToOne
     private Customer customer;

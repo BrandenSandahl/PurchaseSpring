@@ -1,6 +1,8 @@
 package com.theironyard;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,9 +30,6 @@ public class PurchasesController {
 
     @PostConstruct
     public void init() throws FileNotFoundException {
-//       purchaseRepository.deleteAll();
-//        customerRepository.deleteAll();
-//        categoryRepository.deleteAll();
         if (customerRepository.count() < 1) { //if nothing is in the table
 
             File f = new File("customers.csv");
@@ -53,7 +52,8 @@ public class PurchasesController {
                 String[] lineSplit = s.nextLine().split(",");
                 Purchase purchase = new Purchase(lineSplit[1], lineSplit[2], Integer.valueOf(lineSplit[3]));
                 purchase.setCustomer(customerRepository.findOne(Integer.valueOf(lineSplit[0]))); //set the id to a customer
-                Category categoryInDb = categoryRepository.findByCategory(lineSplit[4]);
+
+                Category categoryInDb = categoryRepository.findByCategory(lineSplit[4]); //see if we have a category in DB already
 
                 if (categoryInDb == null) { //if the category has not yet been created
                     categoryInDb = new Category(lineSplit[4].toLowerCase()); //set the category
@@ -67,16 +67,29 @@ public class PurchasesController {
     }
 
 
-    @RequestMapping(name = "/", method = RequestMethod.GET)
-    public String home(Model model, String category) {
+    @RequestMapping(path = "/", method = RequestMethod.GET)
+    public String home(Model model, String category, Integer page) {
         model.addAttribute("categories", categoryRepository.findAll()); //this is to list out all categories
 
+        page = (page == null) ? 0 : page;
+        Page<Purchase> p; //this is like a list kind of
+        PageRequest pr = new PageRequest(page, 5); //this is the subset we want to request
+        Category categoryObject = categoryRepository.findByCategory(category);
+
         if (category != null && !category.equals("back")) {
-            Category categoryObject = categoryRepository.findByCategory(category);
-            model.addAttribute("purchases", purchaseRepository.findByCategory(categoryObject));
+
+            p = purchaseRepository.findByCategory(pr, categoryObject);
         } else {
-            model.addAttribute("purchases", purchaseRepository.findAll()); //lists out all records in purchase table with relations.
+            p = purchaseRepository.findAll(pr); //lists out all records in purchase table with relations.
         }
+
+        model.addAttribute("category",category );
+        model.addAttribute("purchases",p);
+        model.addAttribute("nextPage", page + 1 );
+        model.addAttribute("showNext", p.hasNext());
+        model.addAttribute("previousPage", page - 1);
+        model.addAttribute("showPrevious", p.hasPrevious());
+        model.addAttribute("totalPages", p.getTotalPages());
         return "home";
     }
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link type="text/css" rel="stylesheet" href="style.css">
+    <link type="text/css" rel="stylesheet" href="style.css" />
     <meta charset="UTF-8">
     <title>Purchases</title>
 </head>
@@ -37,6 +37,9 @@
     </tr>
     {{/purchases}}
 </table>
+{{#showPrevious}}<a href="/?page={{previousPage}}{{#category}}&category={{.}}{{/category}}">Previous</a>{{/showPrevious}}
+{{#showNext}}<a href="/?page={{nextPage}}{{#category}}&category={{.}}{{/category}}">Next</a>{{/showNext}}
+{{totalPages}}
 
 </body>
 </html>
